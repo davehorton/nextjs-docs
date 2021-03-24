@@ -332,10 +332,6 @@ There are several types of endpoints:
 * a webrtc or sip client that has registered directly with your application, or
 * Microsoft Teams user
 
-<!--
-* a [parking slot](#park)
--->
-
 You can use the following attributes in the `dial` command:
 
 | option        | description | required  |
@@ -396,18 +392,6 @@ If Microsoft Teams integration has been configured, you can dial out to  Teams u
 | number | the phone number that has been mapped to the teams user by the Microsoft Teams administrator | yes |
 | voicemail | if true, dial directly into user's voicemail to leave a message | no |
 
-<!--
-*parking slot*
-
-> Not yet implemented
-
-| option        | description | required  |
-| ------------- |-------------| -----|
-| type | must be "park" | yes |
-| slot | the name of the parking slot | yes |
-
-Dialing to a parking slot allows you to pick up a call that has been parked in that slot.  If the slot is empty, the `dial` verb will return immediate failure.
--->
 The `confirmHook` property that can be optionally specified as part of the target types (with the exception of the `park` type) is a web callback that will be invoked when the outdial call is answered.  That callback should return an application that will run on the outbound call before bridging it to the inbound call.  If the application completes with the outbound call still in a stable/connected state, then the two calls will be bridged together.
 
 This allows you to easily implement call screening applications (e.g. "You have a call from so-and-so.  Press 1 to decline").
@@ -766,59 +750,6 @@ You can use the following options in the `message` action:
 | provider | Name of the SMS provider to use for the outgoing message. Not required if you have only configured SMS provider on your system. | no |
 
 
-<!--
-## park
-
-> Not yet implemented
-
-The `park` command is used to park a call at a named parking slot.  Once a call is parked, it can be picked up by another call using the `dial` verb with a target type of 'park'.  The park verb completes when one of the following happens:
-
-- It is picked up by another caller, using the dial verb (and that call subsequently completes).
-- It leaves the parking slot due to executing a [leave](#leave) verb.
-- It leaves the parking slot due to a timeout.
-- The caller hangs up.
-
-Once the park command completes, it optionally calls a configured `actionHook` property (unless the caller has hung up) and executes the application returned, if any.  If no action is specified, it proceeds to execute the next task in the current application.
-
-
-```json
-{
-  "verb": "park",
-  "slot": "7000",
-  "actionHook": "/unparked",
-  "waitHook": "/while-parked",
-  "timeout": 60
-}
-```
-
-You can use the following options in the `park` command:
-
-| option        | description | required  |
-| ------------- |-------------| -----|
-| actionHook | a webhook that is invoked when the call leaves the parking slot.  If the call has been bridged to another party, the webhook is invoked when that call is complete. See below for request parameters | no |
-| slot | a label for the parking location | yes |
-| timeout | number of seconds to wait for pickup before exiting the parking slot | no |
-| waitHook | a webhook to call for verbs to execute while parked.  The returned task list may only include play, say, or gather verbs.  Once the task list is completed, the webhook will be called again repeatedly while the call is parked | no |
-
-The `actionHook` request includes the standard request parameters, plus the following:
-
-| property | description |
-| ------------- |-------------|
-| parkOutcome | the result of the park command, as described below |
-| slot | the parking slot used |
-| parkTime | the number of seconds the call was parked |
-
-The `parkOutcome` is one of the following:
-
-| value | description |
-| ------------- |-------------|
-| 'bridged' | The parked call was picked up |
-| 'abandoned' | The call was abandoned in park (i.e. the caller hung up) |
-| 'left' | the call left the parking slot due to a [leave](#leave) command |
-| 'timeout' | the call left the parking slot due to a timeout |
-
--->
-
 ## pause
 
 The pause command waits silently for a specified number of seconds.
@@ -924,59 +855,6 @@ You can use the following options in the `sip:decline` action:
 | reason | a brief description | no (default: the well-known SIP reasons associated with the specified status code |
 | headers | SIP headers to include in the response | no
 
-<!--
-## sip:notify
-
-The sip:notify action is used to a SIP NOTIFY request to one or more registered users.  The sip:notify action is a non-blocking action.
-
-```json
-{
-  "verb": "sip:notify",
-  "user": ["spike"],
-  "contentType": "application/simple-message-summary",
-  "content": [
-    "Messages-Waiting: yes",
-    "Message-Account: sip:spike@sip.example.com",
-    "Voice-Message: 2/8 (0/2)"
-  ],
-  "headers": {
-    "Subscription-State": "active"
-  }
-}
-```
-
-You can use the following options in the `sip:notify` action:
-
-| option        | description | required  |
-| ------------- |-------------| -----|
-| user | user, or array of users, to send NOTIFY requests to | yes |
-| contentType | value of SIP Content-Type header in NOTIFY | yes |
-| content | body of NOTIFY request | yes |
-| headers | object specifying arbitrary headers to apply to SIP NOTIFY request | no
-
-> **Note**: the sip:notify verb is not currently implemented.
-
-## sip:redirect
-
-The sip:redirect command is used to redirect an incoming call to another sip server or network.  This must be the first and only command returned in the web callback for an incoming call.  A SIP 302 Moved response will be sent back to the caller.  
-
-The sip:redirect command is a non-blocking and the session ends immediately after the command is executed.
-
-```json
-{
-  "verb": "sip:redirect",
-  "sipUri": "sip:123@gateway.example.com"
-}
-```
-
-You can use the following options in the `sip:decline` command:
-
-| option        | description | required  |
-| ------------- |-------------| -----|
-| sipUri | a sip uri that will appear in the Contact header of the 302 response to the caller | yes |
-
-> **Note**: the sip:redirect verb is not currently implemented.
--->
 
 ## tag
 
