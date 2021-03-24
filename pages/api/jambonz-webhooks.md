@@ -178,7 +178,7 @@ Synthesized audio is cached for up to 24 hours, so that if the same {text, langu
 
 A JSON service key file containing GCP credentials for cloud speech services must be downloaded and installed on the jambonz feature servers to enable tts and speech recognition for google.  For AWS/Polly, the environment variables AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_REGION must be provided in the server environments where the [jambonz-feature-server](https://github.com/jambonz/jambonz-feature-server) application is running.
 
-As part of the definition of an application, you can set defaults for the language and voice to use for speech synthesis as well as the language to use for speech recognition.  These can then be overridden by verbs in the application, by using the 'synthesizer' and 'recognizer' properties./
+As part of the definition of an application, you can set defaults for the language and voice to use for speech synthesis as well as the language to use for speech recognition.  These can then be overridden by verbs in the application, by using the 'synthesizer' and 'recognizer' properties.
 
 ## Webhooks
 Many of the verbs specify a webhook that will be called when the verb completes, or has some information to deliver to your application.  These verbs contain a property that allow you to configure that webhook.  By convention, the property name will always end in "Hook"; e.g "actionHook", "dtmfHook", and so on.
@@ -273,7 +273,8 @@ You can use the following options in the `dequeue` command:
 | option        | description | required  |
 | ------------- |-------------| -----|
 | name | name of the queue | yes |
-| actionHook | A webhook invoke when call ends. If no webhook is provided, execution will continue with the next verb in the current application. <br/>See below for specified request parameters.| no |
+| actionHook | A webhook invoke when call ends. If no webhook is provided, execution will continue with the next verb in the current application. 
+See below for specified request parameters.| no |
 | beep | if true, play a beep tone to this caller only just prior to connecting the queued call; this provides an auditory cue that the call is now connected | no |
 | confirmHook | A webhook for an application to run on the callee's end before the call is bridged.  This will allow the application to play an informative message to a caller as they leave the queue (e.g. "your call may be recorded") | no |
 | timeout | number of seconds to wait on an empty queue before returning (default: wait forever) | no |
